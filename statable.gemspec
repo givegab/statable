@@ -8,6 +8,7 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{Wrapper around Active Record and Redis Objects}
   gem.homepage      = ""
   
+  gem.add_dependency 'redis'
   gem.add_dependency 'redis-objects'
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "sqlite3"

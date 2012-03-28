@@ -1,4 +1,5 @@
 require "statable/version"
+require "statable/version"
 
 module Statable
 
@@ -19,6 +20,8 @@ module Statable
   end
 
   def self.included(base)
+    # load redis objects
+    base.send :extend, Redis::Objects
     base.send :include, InstanceMethods
     base.send :extend, ClassMethods
   end

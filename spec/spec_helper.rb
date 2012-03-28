@@ -8,6 +8,10 @@ Bundler.setup(:default, :development)
 
 require 'rails'
 require 'active_record'
+
+require 'redis'
+require 'redis/objects'
+
 require 'statable'
 require 'rspec'
 
