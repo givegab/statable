@@ -4,14 +4,18 @@ require "statable/version"
 module Statable
 
   module ClassMethods
-    def statable(key, callbacks)
+    def statable(attr, callbacks)
 
-      # TODO setup redis-object
-      # TODO wire callbacks
+      include Redis::Objects unless self.include?(Redis::Objects)
+
+      # setup redis-object attribute
+      # TODO: add support for different types
+      self.send :counter, attr
+      #p self.counter(attr)
+
+      # wire callbacks
       callbacks.each do |key, callback|
-        p self
-        p key
-        p callback
+        self.send key, callback
       end
     end
   end
@@ -20,8 +24,6 @@ module Statable
   end
 
   def self.included(base)
-    # load redis objects
-    base.send :extend, Redis::Objects
     base.send :include, InstanceMethods
     base.send :extend, ClassMethods
   end
