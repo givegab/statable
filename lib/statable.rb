@@ -25,9 +25,9 @@ module Statable
           case type
             when :counter
               if value > 0
-                redis_obj.decr(value)
+                redis_obj.increment(value)
               else
-                redis_obj.incr(value)
+                redis_obj.decrement(value * -1)
               end
             when :value
               redis_obj.value = value

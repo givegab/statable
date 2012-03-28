@@ -1,1 +1,1 @@
-group = Group.create(name: "group 1", description: "description 1")
+#group = Group.create(name: "group 1")
