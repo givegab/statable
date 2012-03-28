@@ -1,5 +1,4 @@
 require "statable/version"
-require "statable/version"
 
 module Statable
 
