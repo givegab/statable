@@ -4,20 +4,35 @@ require "statable/version"
 module Statable
 
   module ClassMethods
-    def statable(attr, callbacks)
+
+    # type - redis object type
+    # attr - attribute name
+    # callbacks - active record callbacks
+    def statable(type, attr, callbacks = {})
 
       include Redis::Objects unless self.include?(Redis::Objects)
 
       # setup redis-object attribute
-      # TODO: add support for different types
-      self.send :value, attr
-      #p self.counter(attr)
+      self.send type, attr
 
       # wire callbacks
       callbacks.each do |key, callback|
-        self.send key, -> do
-          result = callback.call
-        end
+        self.send key, ->(record) {
+          redis_obj = record.send attr
+          value = callback.call
+
+          # TODO: refactor to InstanceMethods
+          case type
+            when :counter
+              if value > 0
+                redis_obj.decr(value)
+              else
+                redis_obj.incr(value)
+              end
+            when :value
+              redis_obj.value = value
+          end
+        }
       end
     end
   end
