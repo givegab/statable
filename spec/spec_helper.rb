@@ -21,6 +21,10 @@ ActiveRecord::Base.establish_connection(
 
 # load test schema
 load File.dirname(__FILE__) + '/support/schema.rb'
+# load test models
+load File.dirname(__FILE__) + '/support/models.rb'
+# load test data
+load File.dirname(__FILE__) + '/support/data.rb'
 
 RSpec.configure do |config|
 end
