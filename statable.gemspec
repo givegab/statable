@@ -2,11 +2,13 @@
 require File.expand_path('../lib/statable/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["Michal Kuklis"]
+  gem.authors       = ["iYouVo"]
   gem.email         = ["michal.kuklis@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{Wrapper around Active Record and Redis Objects}
+  gem.summary       = %q{Wrapper around Active Record and Redis Objects}
   gem.homepage      = ""
+  
+  gem.add_dependency 'redis-objects'
   gem.add_development_dependency "rspec"
 
   gem.files         = `git ls-files`.split($\)
