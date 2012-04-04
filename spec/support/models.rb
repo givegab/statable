@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
 end
 
 class Group < ActiveRecord::Base
-  statable :counter, :users_total, { callbacks: {after_save: -> { -1 }}, scope: GroupMembership }
+  statable :counter, :users_total, { callbacks: {after_save: -> { +1 }, after_destroy: -> { -1 }}, scope: GroupMembership }
   #statable :counter, :members_total, after_save: -> { 1 }
   #statable :value, :groups_total, after_save: -> { 200 + 100 + 800 }
 

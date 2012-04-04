@@ -27,7 +27,7 @@ describe "statable" do
 
       gm = GroupMembership.new(groupable: user, membership_type: "Staff")
       group.group_memberships << gm
-
+      group.users_total.value.should == 1
     end
   end
 end
