@@ -33,10 +33,4 @@ class Group < ActiveRecord::Base
 
   has_many :group_memberships
 
-  has_many :members,
-           through: :group_memberships,
-           source: :groupable,
-           source_type: "User",
-           select: 'users.*, group_memberships.membership_type',
-           order: "users.last_name"
 end
