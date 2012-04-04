@@ -6,17 +6,22 @@ module Statable
 
     # type - redis object type
     # attr - attribute name
-    # callbacks - active record callbacks
-    def statable(type, attr, callbacks = {})
+    # options - additional options
+    def statable(type, attr, options = {})
 
       include Redis::Objects unless self.include?(Redis::Objects)
+
+      callbacks = options[:callbacks] || {}
+      scope = options[:scope] || self
+      root_class = self
 
       # setup redis-object attribute
       self.send type, attr
 
       # wire callbacks
       callbacks.each do |key, callback|
-        self.send key, ->(record) {
+        scope.send key, ->(record) {
+          record = record.send root_class.name.downcase unless root_class == scope
           redis_obj = record.send attr
           value = callback.call
 

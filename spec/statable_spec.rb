@@ -18,4 +18,16 @@ describe "statable" do
     end
 
   end
+
+  describe "scope" do
+    group = Group.create(name: "group 1")
+    user = User.create(name: "Bob")
+
+    it "should execute callback in the context of scope" do
+
+      gm = GroupMembership.new(groupable: user, membership_type: "Staff")
+      group.group_memberships << gm
+
+    end
+  end
 end
