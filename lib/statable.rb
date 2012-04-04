@@ -4,15 +4,17 @@ module Statable
 
   module ClassMethods
 
-    # type - redis object type
     # attr - attribute name
     # options - additional options
-    def statable(type, attr, options = {})
+    def statable(attr, options = {})
 
       include Redis::Objects unless self.include?(Redis::Objects)
 
       callbacks = options[:callbacks] || {}
       scope = options[:scope] || self
+      type = options[:type] || :counter
+      conditions = options[:conditions] || {}
+
       root_class = self
 
       # setup redis-object attribute
@@ -21,23 +23,36 @@ module Statable
       # wire callbacks
       callbacks.each do |key, callback|
         scope.send key, ->(record) {
-          record = record.send root_class.name.downcase unless root_class == scope
-          redis_obj = record.send attr
-          value = callback.call
+          if root_class.evaluate_conditions(record, conditions)
 
-          # TODO: refactor to InstanceMethods
-          case type
-            when :counter
-              if value > 0
-                redis_obj.increment(value)
-              else
-                redis_obj.decrement(value * -1)
-              end
-            when :value
-              redis_obj.value = value
+            record = record.send root_class.name.downcase unless root_class == scope
+            redis_obj = record.send attr
+            value = callback.is_a?(Proc) ? callback.call : callback
+
+            # TODO: refactor to InstanceMethods
+            case type
+              when :counter
+                if value > 0
+                  redis_obj.increment(value)
+                else
+                  redis_obj.decrement(value * -1)
+                end
+              when :value
+                redis_obj.value = value
+            end
           end
         }
       end
+    end
+
+    def evaluate_conditions(record, conditions)
+      result = true
+      conditions.each do |field, value|
+        if record.send(field) != value
+          result = false
+        end
+      end
+      result
     end
   end
 

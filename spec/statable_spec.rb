@@ -4,16 +4,8 @@ describe "statable" do
   describe "object with counter type" do
     group = Group.create(name: "group 1")
 
-    it "should decrease counter by one" do
-      group.save
-      group.users_total.value.should == -2
-    end
-
-    it "should increase counter by one" do
-      group.members_total.value.should == 2
-    end
-
     it "should set value" do
+      group.save
       group.groups_total.value.should == "1100"
     end
 
@@ -25,9 +17,26 @@ describe "statable" do
 
     it "should execute callback in the context of scope" do
 
-      gm = GroupMembership.new(groupable: user, membership_type: "Staff")
-      group.group_memberships << gm
-      group.staff_total.value.should == 1
+      gm1 = GroupMembership.new(groupable: user, membership_type: "Staff")
+      gm2 = GroupMembership.new(groupable: user, membership_type: "Faculty")
+
+      group.group_memberships << gm1
+      group.staff_members.value.should == 1
+      group.student_members.value.should == 0
+      group.alumni_members.value.should == 0
+      group.faculty_members.value.should == 0
+
+      group.group_memberships << gm2
+      group.staff_members.value.should == 1
+      group.student_members.value.should == 0
+      group.alumni_members.value.should == 0
+      group.faculty_members.value.should == 1
+
+      gm2.destroy
+      group.staff_members.value.should == 1
+      group.student_members.value.should == 0
+      group.alumni_members.value.should == 0
+      group.faculty_members.value.should == 0
     end
   end
 end
