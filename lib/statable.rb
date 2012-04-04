@@ -22,7 +22,7 @@ module Statable
 
       # wire callbacks
       callbacks.each do |key, callback|
-        scope.send key, ->(record) {
+        scope.send key, lambda { |record|
           if root_class.evaluate_conditions(record, conditions)
 
             record = record.send root_class.name.downcase unless root_class == scope
