@@ -20,14 +20,14 @@ describe "statable" do
   end
 
   describe "scope" do
-    group = Group.create(name: "group 1")
+    group = Group.create(name: "group 2")
     user = User.create(name: "Bob")
 
     it "should execute callback in the context of scope" do
 
       gm = GroupMembership.new(groupable: user, membership_type: "Staff")
       group.group_memberships << gm
-      group.users_total.value.should == 1
+      group.staff_total.value.should == 1
     end
   end
 end
