@@ -10,11 +10,11 @@ module Statable
 
       include Redis::Objects unless self.include?(Redis::Objects)
 
+      # set defaults
       callbacks = options[:callbacks] || {}
       scope = options[:scope] || self
       type = options[:type] || :counter
       conditions = options[:conditions] || {}
-
       root_class = self
 
       # setup redis-object attribute
@@ -23,8 +23,8 @@ module Statable
       # wire callbacks
       callbacks.each do |key, callback|
         scope.send key, lambda { |record|
-          if root_class.evaluate_conditions(record, conditions)
 
+          if root_class.evaluate_conditions(record, conditions)
             record = record.send root_class.name.downcase unless root_class == scope
             redis_obj = record.send attr
             value = callback.is_a?(Proc) ? callback.call : callback
