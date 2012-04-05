@@ -41,18 +41,13 @@ module Statable
                 redis_obj.value = value
             end
           end
+
         }
       end
     end
 
     def evaluate_conditions(record, conditions)
-      result = true
-      conditions.each do |field, value|
-        if record.send(field) != value
-          result = false
-        end
-      end
-      result
+      conditions.all? { |c| record.send(c[0]) == c[1] }
     end
   end
 
