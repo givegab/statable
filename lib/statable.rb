@@ -7,7 +7,6 @@ module Statable
     # attr - attribute name
     # options - additional options
     def statable(attr, options = {})
-
       include Redis::Objects unless self.include?(Redis::Objects)
 
       # set defaults
@@ -20,12 +19,18 @@ module Statable
       # setup redis-object attribute
       self.send type, attr
 
-      # wire callbacks
-      callbacks.each do |key, callback|
-        scope.send key, lambda { |record|
+      # process callbacks
+      callbacks.each do |callback_name, callback|
+        method = "#{callback_name}_#{attr}".to_sym
 
-          if root_class.evaluate_conditions(record, conditions)
-            record = record.send root_class.name.downcase unless root_class == scope
+        # stop if method already belongs to scope
+        return if scope.instance_methods(false).include?(method)
+
+        # create callback method
+        scope.send :define_method, method do
+          if root_class.evaluate_conditions(self, conditions)
+
+            record = root_class == scope ? self : self.send(root_class.name.downcase)
             redis_obj = record.send attr
             value = callback.is_a?(Proc) ? callback.call : callback
 
@@ -41,13 +46,15 @@ module Statable
                 redis_obj.value = value
             end
           end
+        end
 
-        }
+        # wire callback name with callback method
+        scope.send callback_name, method
       end
     end
 
     def evaluate_conditions(record, conditions)
-      conditions.all? { |c| record.send(c[0]) == c[1] }
+      return conditions.all? { |c| record.send(c[0]) == c[1] }
     end
   end
 
